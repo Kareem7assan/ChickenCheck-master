@@ -35,62 +35,64 @@ import java.util.concurrent.TimeUnit;
 
 public class LockReceiver extends BroadcastReceiver {
     ArrayList<Mydata> data = new ArrayList<Mydata>();
-    HashMap<String,MyWeather> weath = new HashMap<>();
-    String link="http://api.thingspeak.com/channels/204531/feeds.json?api_key=94G47FDM6PCUFTU8";
+    HashMap<String, MyWeather> weath = new HashMap<>();
+    String link = "http://api.thingspeak.com/channels/204531/feeds.json?api_key=94G47FDM6PCUFTU8";
     //Context context;
     Runnable run;
     SharedPreferences pref;
-    String tempr,humadity,created_at;
-    private int result=0;
-    private float tmp=0;
-    private int last_Id=0;
-    private int entry_id=0;
+    String tempr, humadity, created_at;
+    private int result = 0;
+    private float tmp = 0;
+    private int last_Id = 0;
+    private int entry_id = 0;
     private String s;
     private ArrayList<String> tails;
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-    //    mData(context);
+        //    mData(context);
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-             getData(context);
-              // checkAndFilter(data1,context);
+                getData(context);
+                // checkAndFilter(data1,context);
 
             }
-        },TimeUnit.SECONDS.toMillis(20), TimeUnit.MINUTES.toMillis(30));
+        }, TimeUnit.SECONDS.toMillis(20), TimeUnit.MINUTES.toMillis(30));
 
-       // runThread();
+        // runThread();
     }
+
     private ArrayList<Mydata> getData(final Context context) {
 
         StringRequest request = new StringRequest(Request.Method.GET, link, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                int id=0;
+                int id = 0;
                 try {
 
                     JSONObject obj = new JSONObject(response);
                     JSONArray feedsArray = obj.getJSONArray("feeds");
-                    if(last_Id>0){
-                    JSONObject jsonObject1 = feedsArray.getJSONObject(last_Id-1);
-                     id = jsonObject1.getInt("entry_id");
-                        Log.e("id",id+"");
+                    if (last_Id > 0) {
+                        JSONObject jsonObject1 = feedsArray.getJSONObject(last_Id - 1);
+                        id = jsonObject1.getInt("entry_id");
+                        Log.e("id", id + "");
                     }
-                    if(last_Id!=id || id==0){
-                    for (int i = last_Id; i <feedsArray.length() ; i++) {
-                        JSONObject jsonObject = feedsArray.getJSONObject(i);
-                         entry_id = jsonObject.getInt("entry_id");
-                        tempr = jsonObject.getString("field1");
-                        humadity = jsonObject.getString("field2");
-                        created_at = jsonObject.getString("created_at");
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                         s = DateUtils.getRelativeTimeSpanString(sdf.parse(created_at).getTime(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
-                        data.add(new Mydata(entry_id,tempr,humadity,s));
-                    }}
-                    last_Id=entry_id;
-                    Log.e("last_id:",last_Id+"");
+                    if (last_Id != id || id == 0) {
+                        for (int i = last_Id; i < feedsArray.length(); i++) {
+                            JSONObject jsonObject = feedsArray.getJSONObject(i);
+                            entry_id = jsonObject.getInt("entry_id");
+                            tempr = jsonObject.getString("field1");
+                            humadity = jsonObject.getString("field2");
+                            created_at = jsonObject.getString("created_at");
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                            s = DateUtils.getRelativeTimeSpanString(sdf.parse(created_at).getTime(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+                            data.add(new Mydata(entry_id, tempr, humadity, s));
+                        }
+                    }
+                    last_Id = entry_id;
+                    Log.e("last_id:", last_Id + "");
 
 
                 } catch (JSONException e) {
@@ -98,32 +100,33 @@ public class LockReceiver extends BroadcastReceiver {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                for (Mydata element:data
-                     ) {
-                    if (!element.temp.isEmpty()){
-                         tmp = Float.parseFloat(element.temp);
-                        Log.e("tmp= ", ""+tmp);
-                        result+=tmp;
+                for (Mydata element : data
+                        ) {
+                    if (!element.temp.isEmpty()) {
+                        tmp = Float.parseFloat(element.temp);
+                        Log.e("tmp= ", "" + tmp);
+                        result += tmp;
                     }
                 }
-                if (data.size()>0){
-              float avg= result/data.size();
-                Log.e("res= ", ""+result);
-                Log.e("avg= ", ""+avg);
+                if (data.size() > 0) {
+                    float avg = result / data.size();
+                    Log.e("res= ", "" + result);
+                    Log.e("avg= ", "" + avg);
 
-                //Log.e("condition="+data.get(data.size()-1).date+" "+data.get(data.size()-2).date," "+data.get(data.size()-1).date.equalsIgnoreCase(data.get(data.size()-2).date));
-                result=0;
-                if (avg>=47 || avg<=18 && (last_Id!=id || id==0)){
-                    mData(context,avg);
+                    //Log.e("condition="+data.get(data.size()-1).date+" "+data.get(data.size()-2).date," "+data.get(data.size()-1).date.equalsIgnoreCase(data.get(data.size()-2).date));
+                    result = 0;
+                    if (avg >= 47 || avg <= 18 && (last_Id != id || id == 0)) {
+                        mData(context, avg);
 
 
-                }}
+                    }
+                }
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("Error In Response",error.getMessage());
+                Log.e("Error In Response", error.getMessage());
             }
         });
         Volley.newRequestQueue(context).add(request);
@@ -132,14 +135,13 @@ public class LockReceiver extends BroadcastReceiver {
     }
 
 
-
-    private void mData(Context context,float avg) {
+    private void mData(Context context, float avg) {
 
         Intent newIntent = new Intent(context, ChartActivity.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, newIntent,
-                                        PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -151,7 +153,7 @@ public class LockReceiver extends BroadcastReceiver {
                 .setSmallIcon(R.mipmap.logo)
                 .setContentIntent(pendingIntent)
                 .setContentTitle("Notification")
-                .setContentText("Warning tempreture is  "+avg)
+                .setContentText("Warning tempreture is  " + avg)
                 .setSound(defaultSoundUri)
                 .setAutoCancel(true);
         NotificationManager notificationManager =
@@ -161,7 +163,7 @@ public class LockReceiver extends BroadcastReceiver {
     }
 
     public class MyWeather {
-        private String tempr,humd;
+        private String tempr, humd;
 
         public MyWeather(String temp, String humd) {
             this.tempr = temp;

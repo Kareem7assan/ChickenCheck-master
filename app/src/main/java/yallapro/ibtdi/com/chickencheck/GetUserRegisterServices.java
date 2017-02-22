@@ -22,11 +22,9 @@ public class GetUserRegisterServices extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-            sendBroadcast(new Intent(GetUserRegisterServices.this,LockReceiver.class));
+        sendBroadcast(new Intent(GetUserRegisterServices.this, LockReceiver.class));
         return super.onStartCommand(intent, flags, startId);
     }
-
-
 
 
     @Nullable

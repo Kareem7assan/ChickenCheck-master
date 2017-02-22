@@ -9,12 +9,13 @@ public class Mydata {
     public String temp;
     public String hum;
     public String date;
-    public Mydata(int tid,String temp,String hum,String date) {
 
-        this.tid=tid;
-        this.temp=temp;
-        this.hum=hum;
-        this.date=date;
+    public Mydata(int tid, String temp, String hum, String date) {
+
+        this.tid = tid;
+        this.temp = temp;
+        this.hum = hum;
+        this.date = date;
 
     }
 }

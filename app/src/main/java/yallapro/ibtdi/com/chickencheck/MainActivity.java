@@ -18,7 +18,7 @@ import org.w3c.dom.Text;
 public class MainActivity extends AppCompatActivity {
 
 
-    ProgressBar progressbarOne,progressBarSec;
+    ProgressBar progressbarOne, progressBarSec;
     TextView precent;
     Handler progressHandler = new Handler();
     int i = 0;
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-       // definedData();
+        // definedData();
         //firstThread();
 
         //secThread();
@@ -37,17 +37,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void definedData(){
-        progressbarOne=(ProgressBar) findViewById(R.id.progressBarFloat);
-        progressBarSec=(ProgressBar) findViewById(R.id.progressBarSecond);
-        precent=(TextView) findViewById(R.id.percent);
-        SharedPreferences sh=getSharedPreferences("PercentData", MODE_PRIVATE);
-        SharedPreferences.Editor editor=sh.edit();
-        editor.putString("percent",precent.getText().toString()).apply();
+    private void definedData() {
+        progressbarOne = (ProgressBar) findViewById(R.id.progressBarFloat);
+        progressBarSec = (ProgressBar) findViewById(R.id.progressBarSecond);
+        precent = (TextView) findViewById(R.id.percent);
+        SharedPreferences sh = getSharedPreferences("PercentData", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sh.edit();
+        editor.putString("percent", precent.getText().toString()).apply();
     }
 
 
-    public void firstThread(){
+    public void firstThread() {
         new Thread(new Runnable() {
             public void run() {
                 while (i < 70) {
@@ -66,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
-    public void secThread(){
+
+    public void secThread() {
         new Thread(new Runnable() {
             public void run() {
                 while (i < 70) {
